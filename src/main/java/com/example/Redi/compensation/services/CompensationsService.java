@@ -1,0 +1,57 @@
+package com.example.Redi.compensation.services;
+
+import com.example.Redi.compensation.DTO.CompensationsDTO;
+import com.example.Redi.compensation.DTO.CompensationsUserDTO;
+import com.example.Redi.compensation.data.Compensations;
+import com.example.Redi.compensation.enums.CompensationStatus;
+import com.example.Redi.logs.data.Logs;
+import com.example.Redi.logs.enums.LogType;
+import com.example.Redi.logs.service.LogsService;
+import com.example.Redi.users.data.User;
+import com.example.Redi.users.services.UserRepo;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class CompensationsService {
+
+    @Autowired
+    private CompensationsRepo compensationsRepo;
+    @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private LogsService logsService;
+    public Compensations createCompensation(CompensationsDTO compensationsDTO,String email){
+        User user = userRepo.findByEmail(email);
+        if(user==null){
+            return null;
+        }
+        Compensations compensations = modelMapper.map(compensationsDTO,Compensations.class);
+        compensations.setUser_id(user.getId());
+        compensations.setCompensationStatus(CompensationStatus.APPLICATION_SUBMITTED);
+        compensationsRepo.save(compensations);
+        return compensations;
+    }
+    public Compensations updateCompensationStatus(String id,CompensationStatus compensationStatus,String email){
+        Compensations compensations = compensationsRepo.findById(id).get();
+        String logMessage = String.format("Admin %s requested to change compensation status from %s to %s", email, compensations.getCompensationStatus(), compensationStatus);
+        compensations.setCompensationStatus(compensationStatus);
+        compensationsRepo.save(compensations);
+        logsService.createLog(new Logs(LogType.COMPENSATIONS,email, LocalDateTime.now(),logMessage));
+        return compensations;
+    }
+    public List<Compensations> getUserCompensations(String userId){
+        return compensationsRepo.findByUser_id(userId);
+    }
+
+    public List<CompensationsUserDTO> getAllCompensations(){
+        return compensationsRepo.getAllCompensations();
+    }
+
+}
