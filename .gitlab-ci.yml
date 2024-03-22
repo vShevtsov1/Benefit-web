@@ -5,13 +5,13 @@ stages:
 
 
 variables:
-  IMAGE_NAME: Redi
-  CONTAINER_NAME: Redi-container
+  IMAGE_NAME: redi
+  CONTAINER_NAME: redi-container
 
 build:
   stage: build
   tags:
-    - deploy-roomy
+    - benefit
   image: maven:3.6.3-jdk-11
   script:
     - mvn clean package
@@ -23,7 +23,7 @@ build:
 deploy:
   stage: deploy
   tags:
-    - deploy-roomy
+    - benefit
   image: docker:19.03.12
   script:
     - sudo docker stop $CONTAINER_NAME || true
