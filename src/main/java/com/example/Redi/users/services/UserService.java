@@ -1,8 +1,10 @@
 package com.example.Redi.users.services;
 
+import com.example.Redi.email.EmailService;
 import com.example.Redi.logs.data.Logs;
 import com.example.Redi.logs.enums.LogType;
 import com.example.Redi.logs.service.LogsService;
+import com.example.Redi.s3.S3Service;
 import com.example.Redi.security.TokenServices;
 import com.example.Redi.users.DTO.*;
 import com.example.Redi.users.data.User;
@@ -14,7 +16,9 @@ import org.passay.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -38,6 +42,12 @@ public class UserService {
 
     @Autowired
     private TokenServices tokenServices;
+
+    @Autowired
+    private S3Service service;
+
+    @Autowired
+    private EmailService emailService;
     public String generatePassayPassword() {
         PasswordGenerator gen = new PasswordGenerator();
         CharacterData lowerCaseChars = EnglishCharacterData.LowerCase;
@@ -72,7 +82,7 @@ public class UserService {
         if(!userRepo.existsByEmail(userDTO.getEmail())) {
             User user = modelMapper.map(userDTO, User.class);
             String password = generatePassayPassword();
-            System.out.println(password);
+            emailService.sendEmail(userDTO.getEmail(),password);
             user.setPassword(passwordEncoder.encode(password));
             user.setChangePassword(true);
             userRepo.save(user);
@@ -188,6 +198,11 @@ public class UserService {
         logsService.createLog(new Logs(LogType.USER, email, LocalDateTime.now(), logMessage));
     }
 
+
+    public void uploadUserPhoto(MultipartFile multipartFile,String email) throws IOException {
+        User user = userRepo.findByEmail(email);
+        user.setPhotoUrl(service.uploadPhoto("users",multipartFile));
+    }
 
 
 

@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/user")
@@ -79,6 +82,16 @@ public class userController {
     }
     @DeleteMapping("/admin/delete")
     public void deleteUser(@RequestParam(value = "user_id") String user_id,Authentication authentication){
+    }
+
+    @PostMapping("/uploadPhoto")
+    public void uploadUserPhoto(@RequestPart("file") MultipartFile file, Authentication authentication) {
+        try {
+            userService.uploadUserPhoto(file, authentication.getPrincipal().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
     }
 
 }

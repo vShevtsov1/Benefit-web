@@ -4,10 +4,12 @@ import com.example.Redi.products.DTO.CreateProductDTO;
 import com.example.Redi.products.DTO.UpdateProductDTO;
 import com.example.Redi.products.data.Product;
 import com.example.Redi.products.data.Review;
+import com.example.Redi.s3.S3Service;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -19,8 +21,12 @@ public class ProductsService {
 
     @Autowired
     private ModelMapper modelMapper;
-    public Product createNewProduct(CreateProductDTO createProductDTO){
+
+    @Autowired
+    private S3Service s3Service;
+    public Product createNewProduct(CreateProductDTO createProductDTO) throws IOException {
         Product product = modelMapper.map(createProductDTO, Product.class);
+        product.setPhotoUrl(s3Service.uploadPhoto("products",createProductDTO.getPhotoUrl()));
         productsRepo.save(product);
         return product;
     }
