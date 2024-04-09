@@ -1,6 +1,7 @@
 package com.example.Redi.users;
 
 import com.example.Redi.users.DTO.*;
+import com.example.Redi.users.data.User;
 import com.example.Redi.users.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -83,6 +85,7 @@ public class userController {
     }
     @DeleteMapping("/admin/delete")
     public void deleteUser(@RequestParam(value = "user_id") String user_id,Authentication authentication){
+        userService.deleteUser(user_id,authentication.getPrincipal().toString());
     }
 
     @PostMapping("/uploadPhoto")
@@ -91,6 +94,16 @@ public class userController {
             userService.uploadUserPhoto(file, authentication.getPrincipal().toString());
         } catch (IOException e) {
             e.printStackTrace();
+
+        }
+    }
+
+    @GetMapping("/admin/all")
+    public ResponseEntity<List<UserDTO>> findAllUsers(){
+        try {
+            return new ResponseEntity<>(userService.findAllUsers(),HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
     }

@@ -23,6 +23,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.passay.DictionarySubstringRule.ERROR_CODE;
 
@@ -202,6 +204,13 @@ public class UserService {
     public void uploadUserPhoto(MultipartFile multipartFile,String email) throws IOException {
         User user = userRepo.findByEmail(email);
         user.setPhotoUrl(service.uploadPhoto("users",multipartFile));
+    }
+
+    public List<UserDTO> findAllUsers() {
+        List<User> userList = userRepo.findAll();
+        return userList.stream()
+                .map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
     }
 
 

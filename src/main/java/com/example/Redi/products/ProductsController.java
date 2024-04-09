@@ -67,4 +67,15 @@ public class ProductsController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping("/admin/delete")
+    public ResponseEntity deleteProduct(@RequestParam("product_id")String product_id){
+        try {
+            productsService.deleteProduct(product_id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
