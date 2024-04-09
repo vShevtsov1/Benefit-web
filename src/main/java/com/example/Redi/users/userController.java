@@ -38,6 +38,7 @@ public class userController {
             return new ResponseEntity<>(userService.loginUser(loginDTO),HttpStatus.OK);
         }
         catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         }
