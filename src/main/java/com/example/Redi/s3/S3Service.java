@@ -37,7 +37,7 @@ public class S3Service {
         this.accessKey = accessKey;
         AwsBasicCredentials credentials = AwsBasicCredentials.create(keyID, accessKey);
         this.s3Client = S3Client.builder()
-                .region(Region.EU_CENTRAL_1)
+                .region(Region.EU_WEST_1)
                 .credentialsProvider(() -> credentials)
                 .build();
     }
@@ -54,7 +54,7 @@ public class S3Service {
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
-                .acl(ObjectCannedACL.PUBLIC_READ)
+                .acl(ObjectCannedACL.PRIVATE)
                 .contentType(file.getContentType())
                 .build();
 

@@ -25,6 +25,7 @@ public class ProductsController {
             return new ResponseEntity<>(productsService.createNewProduct(createProductDTO),HttpStatus.CREATED);
         }
         catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
