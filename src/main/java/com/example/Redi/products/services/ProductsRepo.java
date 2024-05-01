@@ -6,5 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 public interface ProductsRepo extends MongoRepository<Product,String> {
-    List<Product> getProductsByCategory(String category);
+    List<Product> getProductsByCategoryAndCountry(String category,String country);
+    List<Product> getProductsByCountry(String country);
 }

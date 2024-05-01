@@ -17,6 +17,7 @@ public class UserDTO {
     private String surname;
     private String department;
     private String division;
+    private String country;
     private String position;
     private Date hireDate;
     private int bonusCount;

@@ -101,7 +101,7 @@ public class UserService {
         if(user == null){
             return new LoginResponseDTO("User with the provided email does not exist", LoginUser.USER_NOT_EXIST,null,null);
         }
-        if(user.getChangePassword()){
+        if(user.getChangePassword() && passwordEncoder.matches(loginDTO.getPassword(),user.getPassword())){
             return new LoginResponseDTO("Password change is required",LoginUser.PASSWORD_CHANGE_REQUIRED,tokenServices.generateTokenUser(user, Date.from(Instant.now().plus(10, ChronoUnit.MINUTES))),null);
         }
         if(passwordEncoder.matches(loginDTO.getPassword(),user.getPassword())){
@@ -204,6 +204,7 @@ public class UserService {
     public void uploadUserPhoto(MultipartFile multipartFile,String email) throws IOException {
         User user = userRepo.findByEmail(email);
         user.setPhotoUrl(service.uploadPhoto("users",multipartFile));
+        userRepo.save(user);
     }
 
     public List<UserDTO> findAllUsers() {

@@ -25,6 +25,7 @@ public class User {
     private String position;
     private Date hireDate;
     private int bonusCount;
+    private String country;
     @Indexed(unique = true)
     private String email;
     private List<String> additionalEmails;

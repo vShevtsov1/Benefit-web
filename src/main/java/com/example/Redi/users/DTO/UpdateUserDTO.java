@@ -17,7 +17,7 @@ public class UpdateUserDTO {
     private String surname;
     private List<String> additionalEmails;
     private String phone;
+    private String country;
     private String shippingAddress;
-    private MultipartFile photoUrl;
 
 }

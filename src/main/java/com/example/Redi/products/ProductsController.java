@@ -8,7 +8,9 @@ import com.example.Redi.products.services.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -40,7 +42,17 @@ public class ProductsController {
         }
     }
 
-    @PostMapping("/get-all")
+    @PostMapping("/update/photo")
+    public void updateProductPhoto(@RequestPart("file") MultipartFile file,@RequestParam("productId") String productId){
+        try {
+            productsService.updateProductPhoto(file,productId);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @PostMapping("/admin/get-all")
     public ResponseEntity<List<Product>> getAllProducts(){
         try {
             return new ResponseEntity<>(productsService.getAllProducts(),HttpStatus.OK);
@@ -50,9 +62,18 @@ public class ProductsController {
         }
     }
     @PostMapping("/get-all/category")
-    public ResponseEntity<List<Product>> getAllProducts(@RequestParam("category")String category){
+    public ResponseEntity<List<Product>> getAllProducts(@RequestParam("category")String category, Authentication authentication){
         try {
-            return new ResponseEntity<>(productsService.getAllProductsByCategory(category),HttpStatus.OK);
+            return new ResponseEntity<>(productsService.getAllProductsByCategory(category,authentication.getPrincipal().toString()),HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PostMapping("/get-all")
+    public ResponseEntity<List<Product>> getAllProductsUser( Authentication authentication){
+        try {
+            return new ResponseEntity<>(productsService.getAllProductsByCountry(authentication.getPrincipal().toString()),HttpStatus.OK);
         }
         catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -20,17 +20,20 @@ public class Product {
     private String category;
     private String description;
     private double price;
+    private String country;
+    private String priceDescription;
     private int availableQuantity = Integer.MAX_VALUE;
     private int purchaseCount = 0;
     private List<Review> reviews = new ArrayList<>();
     private Boolean visible = true;
 
-    public Product(String photoUrl, String name, String category, String description, double price, int availableQuantity, int purchaseCount, List<Review> reviews, Boolean visible) {
+    public Product(String photoUrl, String name, String category, String description, double price,String country, int availableQuantity, int purchaseCount, List<Review> reviews, Boolean visible) {
         this.photoUrl = photoUrl;
         this.name = name;
         this.category = category;
         this.description = description;
         this.price = price;
+        this.country = country;
         this.availableQuantity = availableQuantity;
         this.purchaseCount = purchaseCount;
         this.reviews = reviews;

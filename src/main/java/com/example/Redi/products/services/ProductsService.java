@@ -5,9 +5,12 @@ import com.example.Redi.products.DTO.UpdateProductDTO;
 import com.example.Redi.products.data.Product;
 import com.example.Redi.products.data.Review;
 import com.example.Redi.s3.S3Service;
+import com.example.Redi.users.data.User;
+import com.example.Redi.users.services.UserRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
@@ -21,6 +24,8 @@ public class ProductsService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private UserRepo userRepo;
 
     @Autowired
     private S3Service s3Service;
@@ -50,8 +55,13 @@ public class ProductsService {
     public List<Product> getAllProducts(){
         return productsRepo.findAll();
     }
-    public List<Product> getAllProductsByCategory(String category){
-        return productsRepo.getProductsByCategory(category);
+    public List<Product> getAllProductsByCategory(String category,String email){
+        User user = userRepo.findByEmail(email);
+        return productsRepo.getProductsByCategoryAndCountry(category,user.getCountry());
+    }
+    public List<Product> getAllProductsByCountry(String email){
+        User user = userRepo.findByEmail(email);
+        return productsRepo.getProductsByCountry(user.getCountry());
     }
     public Product applyReview(String product_id, Review review){
         Product product = productsRepo.findById(product_id).get();
@@ -68,6 +78,10 @@ public class ProductsService {
         productsRepo.deleteById(id);
     }
 
-
+    public void updateProductPhoto(MultipartFile file,String productId) throws IOException {
+    Product product = productsRepo.findById(productId).get();
+    product.setPhotoUrl(s3Service.uploadPhoto("products",file));
+    productsRepo.save(product);
+    }
 
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserCreateDTO {
     private String message;
+
     private CreateUser status;
     private UserDTO userDTO;
 }
