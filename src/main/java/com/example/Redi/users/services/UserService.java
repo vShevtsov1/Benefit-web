@@ -129,6 +129,7 @@ public class UserService {
         user.setSurname(userDTO.getSurname());
         user.setAdditionalEmails(userDTO.getAdditionalEmails());
         user.setPhone(userDTO.getPhone());
+        user.setCountry(userDTO.getCountry());
         user.setShippingAddress(userDTO.getShippingAddress());
         userRepo.save(user);
         return modelMapper.map(user,UserDTO.class);
@@ -140,6 +141,7 @@ public class UserService {
             user.setSurname(userDTO.getSurname());
             user.setDepartment(userDTO.getDepartment());
             user.setDivision(userDTO.getDivision());
+            user.setCountry(userDTO.getCountry());
             user.setPosition(userDTO.getPosition());
             user.setHireDate(userDTO.getHireDate());
             user.setEmail(userDTO.getEmail());
@@ -154,6 +156,7 @@ public class UserService {
             logMessage += "Surname: " + user.getSurname() + "\n";
             logMessage += "Department: " + user.getDepartment() + "\n";
             logMessage += "Division: " + user.getDivision() + "\n";
+            logMessage += "Country: " + user.getCountry() + "\n";
             logMessage += "Position: " + user.getPosition() + "\n";
             logMessage += "Hire Date: " + user.getHireDate() + "\n";
             logMessage += "Email: " + user.getEmail() + "\n";
@@ -201,10 +204,12 @@ public class UserService {
     }
 
 
-    public void uploadUserPhoto(MultipartFile multipartFile,String email) throws IOException {
+    public UserDTO uploadUserPhoto(MultipartFile multipartFile,String email) throws IOException {
         User user = userRepo.findByEmail(email);
         user.setPhotoUrl(service.uploadPhoto("users",multipartFile));
         userRepo.save(user);
+        return modelMapper.map(user,UserDTO.class);
+
     }
 
     public List<UserDTO> findAllUsers() {

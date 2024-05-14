@@ -40,6 +40,8 @@ public class ProductsService {
         if(product!=null){
             product.setName(updateProductDTO.getName());
             product.setCategory(updateProductDTO.getCategory());
+            product.setCountry(updateProductDTO.getCountry());
+            product.setPriceDescription(updateProductDTO.getPriceDescription());
             product.setDescription(updateProductDTO.getDescription());
             product.setPrice(updateProductDTO.getPrice());
             product.setAvailableQuantity(updateProductDTO.getAvailableQuantity());

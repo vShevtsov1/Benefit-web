@@ -17,6 +17,8 @@ public class ProductsDTO {
     private String photoUrl;
     private String name;
     private String category;
+    private String country;
+    private String priceDescription;
     private String description;
     private double price;
 }

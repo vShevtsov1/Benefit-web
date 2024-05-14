@@ -89,12 +89,12 @@ public class userController {
     }
 
     @PostMapping("/uploadPhoto")
-    public void uploadUserPhoto(@RequestPart("file") MultipartFile file, Authentication authentication) {
+    public UserDTO uploadUserPhoto(@RequestPart("file") MultipartFile file, Authentication authentication) {
         try {
-            userService.uploadUserPhoto(file, authentication.getPrincipal().toString());
+           return userService.uploadUserPhoto(file, authentication.getPrincipal().toString());
         } catch (IOException e) {
             e.printStackTrace();
-
+            return null;
         }
     }
 

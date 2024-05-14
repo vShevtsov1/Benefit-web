@@ -16,6 +16,8 @@ public class UpdateProductDTO {
     private String name;
     private String category;
     private String description;
+    private String country;
+    private String priceDescription;
     private double price;
     private int availableQuantity;
     private Boolean visible;
