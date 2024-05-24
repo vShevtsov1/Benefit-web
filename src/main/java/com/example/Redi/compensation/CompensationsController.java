@@ -42,7 +42,7 @@ public class CompensationsController {
     }
 
     @GetMapping("/user/compensations")
-    public ResponseEntity<List<Compensations>> getUserCompensations(@RequestParam(value = "user_id") String user_id){
+    public ResponseEntity<List<CompensationsUserDTO>> getUserCompensations(@RequestParam(value = "user_id") String user_id){
         try {
             return new ResponseEntity<>(compensationsService.getUserCompensations(user_id),HttpStatus.OK);
 

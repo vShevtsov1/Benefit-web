@@ -7,12 +7,15 @@ import com.example.Redi.compensation.enums.CompensationStatus;
 import com.example.Redi.logs.data.Logs;
 import com.example.Redi.logs.enums.LogType;
 import com.example.Redi.logs.service.LogsService;
+import com.example.Redi.s3.S3Service;
 import com.example.Redi.users.data.User;
 import com.example.Redi.users.services.UserRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,10 +30,15 @@ public class CompensationsService {
     private UserRepo userRepo;
     @Autowired
     private LogsService logsService;
-    public Compensations createCompensation(CompensationsDTO compensationsDTO,String email){
+    @Autowired
+    private S3Service service;
+    public Compensations createCompensation(CompensationsDTO compensationsDTO,String email) throws IOException {
         User user = userRepo.findByEmail(email);
         if(user==null){
             return null;
+        }
+        for (int i = 0;i<compensationsDTO.getImages().size();i++){
+            compensationsDTO.getImages().set(i,service.uploadPhoto("compensation", (MultipartFile) compensationsDTO.getImages().get(i)));
         }
         Compensations compensations = modelMapper.map(compensationsDTO,Compensations.class);
         compensations.setUser_id(user.getId());
@@ -46,7 +54,7 @@ public class CompensationsService {
         logsService.createLog(new Logs(LogType.COMPENSATIONS,email, LocalDateTime.now(),logMessage));
         return compensations;
     }
-    public List<Compensations> getUserCompensations(String userId){
+    public List<CompensationsUserDTO> getUserCompensations(String userId){
         return compensationsRepo.findByUser_id(userId);
     }
 

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductQuantitySold {
     private Integer totalQuantitySold;
-    private ProductsDTO productsDTO;
+    private ProductsDTO product;
 }

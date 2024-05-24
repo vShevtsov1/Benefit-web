@@ -19,5 +19,6 @@ public class Compensations {
     private String message;
     private Integer count;
     private String user_id;
+    private String orderId;
     private CompensationStatus compensationStatus;
 }
