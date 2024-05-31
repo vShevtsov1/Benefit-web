@@ -26,6 +26,7 @@ public class CompensationsController {
             return new ResponseEntity<>(compensationsService.createCompensation(compensationsDTO,authentication.getPrincipal().toString()),HttpStatus.CREATED);
         }
         catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
