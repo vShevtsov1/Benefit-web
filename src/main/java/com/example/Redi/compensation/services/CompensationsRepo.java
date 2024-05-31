@@ -14,11 +14,12 @@ public interface CompensationsRepo extends MongoRepository<Compensations,String>
             "{ $addFields: { user_id: { $toObjectId: '$user_id' } } }",
             " {$lookup:{from:'Users', localField:'user_id', foreignField:'_id', as:'user'}}",
             "{$set:{user_id:{$arrayElemAt:['$user', 0]}}}",
-            "{ $addFields: { orderId: { $toObjectId: 'orderId' } } }",
+            "{ $addFields: { orderId: { $toObjectId: '$orderId' } } }",
             " {$lookup:{from:'Order', localField:'orderId', foreignField:'_id', as:'Order'}}",
-            "{$set:{user_id:{$arrayElemAt:['Order', 0]}}}"
+            "{$set:{orderId:{$arrayElemAt:['$Order', 0]}}}"
     })
     List<CompensationsUserDTO> findByUser_id(String userId);
+
 
     @Aggregation(pipeline = {
             "{ $addFields: { user_id: { $toObjectId: '$user_id' } } }",
@@ -26,7 +27,7 @@ public interface CompensationsRepo extends MongoRepository<Compensations,String>
             "{$set:{user_id:{$arrayElemAt:['$user', 0]}}}",
             "{ $addFields: { orderId: { $toObjectId: 'orderId' } } }",
             " {$lookup:{from:'Order', localField:'orderId', foreignField:'_id', as:'Order'}}",
-            "{$set:{user_id:{$arrayElemAt:['Order', 0]}}}"
+            "{$set:{orderId:{$arrayElemAt:['$Order', 0]}}}"
 
     })
     List<CompensationsUserDTO> getAllCompensations();
