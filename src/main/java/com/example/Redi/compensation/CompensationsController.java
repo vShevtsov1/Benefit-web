@@ -5,7 +5,7 @@ import com.example.Redi.compensation.DTO.CompensationsUserDTO;
 import com.example.Redi.compensation.data.Compensations;
 import com.example.Redi.compensation.enums.CompensationStatus;
 import com.example.Redi.compensation.services.CompensationsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,10 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/compensations")
+@AllArgsConstructor
 public class CompensationsController {
 
-    @Autowired
-    private CompensationsService compensationsService;
+
+    private final CompensationsService compensationsService;
 
     @PostMapping("/create")
     public ResponseEntity<Compensations> createNewCompensations(@ModelAttribute CompensationsDTO compensationsDTO, Authentication authentication){

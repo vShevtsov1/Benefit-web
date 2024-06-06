@@ -1,19 +1,26 @@
 package com.example.Redi.security;
 
 import com.example.Redi.users.enums.Role;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
+import javax.servlet.http.HttpServletResponse;
+
 @EnableWebSecurity
-public class SecurityConfig {
+@EnableGlobalMethodSecurity(
+        securedEnabled = true,
+        jsr250Enabled = true,
+        prePostEnabled = true
+)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtTokenFilter JwtTokenFilter;
@@ -32,31 +39,41 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf(csrf -> csrf.disable())
+    public void  configure(HttpSecurity http) throws Exception {
 
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers("/user/create").hasAnyRole(String.valueOf(Role.ADMIN))
-                        .requestMatchers("/user/login").permitAll()
-                        .requestMatchers("/user/admin/all").hasAnyRole(String.valueOf(Role.ADMIN))
-                        .requestMatchers("/product/admin/get-all").hasAnyRole(String.valueOf(Role.ADMIN))
-                        .requestMatchers("/product/admin/delete").hasAnyRole(String.valueOf(Role.ADMIN))
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(JwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+
+        http = http.cors().and().csrf().disable();
+
+        // Set session management to stateless
+        http = http
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and();
+
+        // Set unauthorized requests exception handler
+        http = http
                 .exceptionHandling()
                 .authenticationEntryPoint(
-                        (request, response, authException)
-                                -> response.sendError(
-                                HttpServletResponse.SC_UNAUTHORIZED,
-                                authException.getLocalizedMessage()
-                        )
-                );
+                        (request, response, ex) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+                        }
+                )
+                .and();
 
-        return http.build();
+        http.authorizeRequests()
+                // Swagger endpoints must be publicly accessible
+                .mvcMatchers(AUTH_WHITELIST).permitAll()
+                .mvcMatchers("/user/create").hasAnyRole(String.valueOf(Role.ADMIN))
+                .mvcMatchers("/user/login").permitAll()
+                .mvcMatchers("/user/admin/all").hasAnyRole(String.valueOf(Role.ADMIN))
+                .mvcMatchers("/product/admin/get-all").hasAnyRole(String.valueOf(Role.ADMIN))
+                .mvcMatchers("/product/admin/delete").hasAnyRole(String.valueOf(Role.ADMIN))
+                .anyRequest().authenticated();
+        // Add JWT token filter
+        http.addFilterBefore(JwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+
+
     }
 }
