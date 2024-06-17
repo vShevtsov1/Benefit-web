@@ -65,7 +65,7 @@ public class OrderService {
         }
         user.setBonusCount((int) (user.getBonusCount() - sum));
         userRepo.save(user);
-        Order order = new Order(LocalDateTime.now(), createOrderDTO.getProducts(), sum, OrderType.NEW, user.getId());
+        Order order = new Order(LocalDateTime.now(), createOrderDTO.getProducts(), sum, OrderType.NEW, user.getId(),orderRepo.count()+1);
         orderRepo.save(order);
         OrderFullDTO orderFullDTO = modelMapper.map(order, OrderFullDTO.class);
         List<ProductsOrderFullDTO> products_response = new ArrayList<>();

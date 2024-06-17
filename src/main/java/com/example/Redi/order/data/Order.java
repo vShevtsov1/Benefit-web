@@ -21,12 +21,14 @@ public class Order {
     private Double sum;
     private OrderType orderType;
     private String user_id;
+    private Long orderNumber;
 
-    public Order(LocalDateTime time, List<ProductsOrderDTO> products, Double sum, OrderType orderType, String user_id) {
+    public Order(LocalDateTime time, List<ProductsOrderDTO> products, Double sum, OrderType orderType, String user_id, Long orderNumber) {
         this.time = time;
         this.products = products;
         this.sum = sum;
         this.orderType = orderType;
         this.user_id = user_id;
+        this.orderNumber = orderNumber;
     }
 }

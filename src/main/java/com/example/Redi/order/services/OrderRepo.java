@@ -77,4 +77,5 @@ public interface OrderRepo extends MongoRepository<Order,String> {
     List<OrderFullDTO> findByUser_idAndTimeRange(String user_id, Date fromDate, Date toDate);
 
 
+    long count();
 }

@@ -20,4 +20,6 @@ public class OrderFullDTO {
     private Double sum;
     private OrderType orderType;
     private UserDTO user;
+    private Long orderNumber;
+
 }
