@@ -22,7 +22,7 @@ public class BonusService {
     @Autowired
     private LogsService logsService;
 
-    @Scheduled(cron = "0 0 0 * * ?") // This will run at midnight every day
+    @Scheduled(cron = "0 0 0 * * ?")
     public void updateBonuses() {
         List<User> users = userRepository.findAll();
         Date today = new Date();
