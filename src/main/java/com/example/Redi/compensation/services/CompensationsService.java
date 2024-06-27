@@ -42,7 +42,7 @@ public class CompensationsService {
         }
         Compensations compensations = modelMapper.map(compensationsDTO,Compensations.class);
         compensations.setUser_id(user.getId());
-        compensations.setCompensationStatus(CompensationStatus.APPLICATION_SUBMITTED);
+        compensations.setCompensationStatus(CompensationStatus.NEW);
         compensationsRepo.save(compensations);
         return compensations;
     }
