@@ -21,7 +21,7 @@ public interface OrderRepo extends MongoRepository<Order,String> {
             "{$addFields: { \"products.product\": { $toObjectId: '$products.product' } }}",
             "{$lookup: { from: \"products\", localField: \"products.product\", foreignField: \"_id\", as: \"products.product\" }}",
             "{$set: { \"products.product\": { $arrayElemAt: ['$products.product', 0]} }}",
-            "{$group: { _id: \"$_id\", time:{ $first: '$time' }, products: { $push: '$products' }, sum:{ $first: '$sum' }, orderType:{ $first: '$orderType' }, user:{ $first: '$user' } }}"
+            "{$group: { _id: \"$_id\", time:{ $first: '$time' }, products: { $push: '$products' }, sum:{ $first: '$sum' }, orderType:{ $first: '$orderType' },orderNumber:{ $first: '$orderNumber' }, user:{ $first: '$user' } }}"
     })
     List<OrderFullDTO> getOrdersByStatus(List<String> status);
 
@@ -34,7 +34,7 @@ public interface OrderRepo extends MongoRepository<Order,String> {
             "{$addFields: { \"products.product\": { $toObjectId: '$products.product' } }}",
             "{$lookup: { from: \"products\", localField: \"products.product\", foreignField: \"_id\", as: \"products.product\" }}",
             "{$set: { \"products.product\": { $arrayElemAt: ['$products.product', 0]} }}",
-            "{$group: { _id: \"$_id\", time:{ $first: '$time' }, products: { $push: '$products' }, sum:{ $first: '$sum' }, orderType:{ $first: '$orderType' }, user:{ $first: '$user' } }}"
+            "{$group: { _id: \"$_id\", time:{ $first: '$time' }, products: { $push: '$products' }, sum:{ $first: '$sum' }, orderType:{ $first: '$orderType' },orderNumber:{ $first: '$orderNumber' }, user:{ $first: '$user' } }}"
     })
     List<OrderFullDTO> findByUser_id(String user_id);
 
@@ -72,7 +72,7 @@ public interface OrderRepo extends MongoRepository<Order,String> {
             "{$addFields: { \"products.product\": { $toObjectId: '$products.product' } }}",
             "{$lookup: { from: \"products\", localField: \"products.product\", foreignField: \"_id\", as: \"products.product\" }}",
             "{$set: { \"products.product\": { $arrayElemAt: ['$products.product', 0]} }}",
-            "{$group: { _id: \"$_id\", time:{ $first: '$time' }, products: { $push: '$products' }, sum:{ $first: '$sum' }, orderType:{ $first: '$orderType' }, user:{ $first: '$user' } }}"
+            "{$group: { _id: \"$_id\", time:{ $first: '$time' }, products: { $push: '$products' }, sum:{ $first: '$sum' }, orderType:{ $first: '$orderType' },orderNumber:{ $first: '$orderNumber' }, user:{ $first: '$user' } }}"
     })
     List<OrderFullDTO> findByUser_idAndTimeRange(String user_id, Date fromDate, Date toDate);
 
