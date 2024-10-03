@@ -14,7 +14,7 @@ build:
     - benefit-web-server
   image: maven:3.6.3-jdk-11
   script:
-    - sudo docker build -t $IMAGE_NAME .
+    - docker build -t $IMAGE_NAME .
   artifacts:
     paths:
       - target/
@@ -25,8 +25,8 @@ deploy:
     - benefit-web-server
   image: docker:19.03.12
   script:
-    - sudo docker stop $CONTAINER_NAME || true
-    - sudo docker rm $CONTAINER_NAME || true
-    - sudo docker run -d --name $CONTAINER_NAME -p 8080:8080 $IMAGE_NAME
+    - docker stop $CONTAINER_NAME || true
+    - docker rm $CONTAINER_NAME || true
+    - docker run -d --name $CONTAINER_NAME -p 8080:8080 $IMAGE_NAME
 
 
