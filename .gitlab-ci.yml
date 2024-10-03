@@ -11,7 +11,7 @@ variables:
 build:
   stage: build
   tags:
-    - benefit
+    - benefit-web-server
   image: maven:3.6.3-jdk-11
   script:
     - sudo docker build -t $IMAGE_NAME .
@@ -22,7 +22,7 @@ build:
 deploy:
   stage: deploy
   tags:
-    - benefit
+    - benefit-web-server
   image: docker:19.03.12
   script:
     - sudo docker stop $CONTAINER_NAME || true
