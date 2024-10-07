@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        h2 {
+            color: #1a73e8;
+        }
+        .order-info {
+            margin-bottom: 20px;
+        }
+        .order-info p {
+            margin: 5px 0;
+        }
+        .order-details {
+            margin: 20px 0;
+        }
+        .order-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .order-details th, .order-details td {
+            border: 1px solid #e0e0e0;
+            padding: 10px;
+            text-align: left;
+        }
+        .order-details th {
+            background-color: #f1f1f1;
+        }
+        .total-cost {
+            text-align: right;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+    </style>
+    <title>Новый заказ</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Новый заказ от пользователя</h2>
+        <div class="order-info">
+            <p><strong>Пользователь:</strong> {{user}}</p>
+            <p><strong>Дата/время заказа:</strong> {{date}}</p>
+            <p><strong>Адрес доставки:</strong> {{address}}</p>
+        </div>
+
+        <div class="order-details">
+            <h3>Детали заказа</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Название позиции</th>
+                        <th>Стоимость</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{products}}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="total-cost"><strong>Общая стоимость заказа: {{sum}} грн</strong></p>
+    </div>
+</body>
+</html>

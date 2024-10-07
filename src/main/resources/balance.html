@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #1a73e8;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            margin: 15px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <title>Зміна балансу</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Зміна балансу RediCoins</h1>
+        </div>
+        <div class="content">
+            <p>Шановний користувачу,</p>
+            <p>Адміністрація сайту хоче вас повідомити, що ваш баланс було <strong>{{type}}</strong> на сумму в <strong>{{changeSumm}} RediCoins</strong>.</p>
+            <p>Зараз на вашому балансі <strong>{{curentSumm}} RediCoins</strong>.</p>
+            <p>Гарного дня!</p>
+            <p>З повагою,<br> адміністрація <a href="https://benefit.redi.partners/">https://benefit.redi.partners/</a></p>
+        </div>
+        <div class="footer">
+            <p>Це автоматичне повідомлення. Будь ласка, не відповідайте на цей лист.</p>
+            <p>Якщо у вас виникли питання, звертайтеся до нашої служби підтримки на <a href="mailto:support@redi.partners">support@redi.partners</a>.</p>
+        </div>
+    </div>
+</body>
+</html>

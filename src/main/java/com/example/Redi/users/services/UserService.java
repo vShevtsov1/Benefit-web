@@ -11,6 +11,7 @@ import com.example.Redi.users.data.User;
 import com.example.Redi.users.enums.CreateUser;
 import com.example.Redi.users.enums.LoginUser;
 import com.example.Redi.users.enums.UpdatePointType;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.passay.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static org.passay.DictionarySubstringRule.ERROR_CODE;
 
 @Service
+@Slf4j
 public class UserService {
 
     @Autowired
@@ -179,12 +182,26 @@ public class UserService {
             if(updatePoints.getType().equals(UpdatePointType.INCREASE)){
                 user.setBonusCount(user.getBonusCount()+updatePoints.getCount());
                 userRepo.save(user);
+
+                CompletableFuture.runAsync(() ->emailService.sendEmailUserPoints(user.getEmail(),"збільшено",updatePoints.getCount(),user.getBonusCount()))
+                        .thenRun(() -> log.info("Email sent asynchronously!"))
+                        .exceptionally(ex -> {
+                            log.error("Failed to send email", ex);
+                            return null;
+                        });
             }
             else {
                 user.setBonusCount(user.getBonusCount()-updatePoints.getCount());
                 userRepo.save(user);
+                CompletableFuture.runAsync(() ->emailService.sendEmailUserPoints(user.getEmail(),"зменшено",updatePoints.getCount(),user.getBonusCount()))
+                        .thenRun(() -> log.info("Email sent asynchronously!"))
+                        .exceptionally(ex -> {
+                            log.error("Failed to send email", ex);
+                            return null;
+                        });
 
             }
+
             String logMessage = "Admin updated points for user with ID: " + user.getId() + "\n";
             logMessage += "Message: " + updatePoints.getMessage() + "\n";
             logMessage += "Type: " + updatePoints.getType() + "\n";
