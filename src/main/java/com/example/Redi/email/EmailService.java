@@ -100,7 +100,7 @@ public class EmailService {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(gmailUser, "Benefit REDI"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-            message.setSubject("Новый заказ от пользователя");
+            message.setSubject("Новый заказ от пользователя "+ user+" от "+date);
 
             String htmlContent = loadHTMLContentOrder( user,date,address,products,sum);
             message.setContent(htmlContent, "text/html; charset=utf-8");
@@ -200,6 +200,62 @@ public class EmailService {
         htmlContent = htmlContent.replace("{{type}}", type);
         htmlContent = htmlContent.replace("{{changeSumm}}", changeSumm.toString());
         htmlContent = htmlContent.replace("{{curentSumm}}",curentSumm.toString());
+        return htmlContent;
+    }
+
+
+    public void sendEmailUserFeedback(String id,String email,String phone_number,String content) {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(gmailUser, gmailPassword);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(gmailUser, "Benefit REDI"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            message.setSubject("Новый отзыв от пользоватся "+email);
+
+            String htmlContent = loadHTMLContentFeedback( id,email,phone_number,content);
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+
+            Transport.send(message);
+
+            System.out.println("Email sent successfully!");
+
+        } catch (MessagingException mex) {
+            mex.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private String loadHTMLContentFeedback(String id,String email,String phone_number,String message) {
+        String htmlContent = ""; // Read HTML content from your file or resource
+        ClassPathResource resource = new ClassPathResource("feedback.html");
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            htmlContent = sb.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        htmlContent = htmlContent.replace("{{user_id}}", id);
+        htmlContent = htmlContent.replace("{{email}}", email);
+        htmlContent = htmlContent.replace("{{phone_number}}",phone_number);
+        htmlContent = htmlContent.replace("{{message}}",message);
+        htmlContent = htmlContent.replace("{{feedbackType}}","NEW");
         return htmlContent;
     }
 

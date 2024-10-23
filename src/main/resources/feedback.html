@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #e53935;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            margin: 15px 0;
+        }
+        .footer {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #e53935;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <title>Новый отзыв от пользователя</title>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Новый отзыв получен</h1>
+    </div>
+    <div class="content">
+        <p>Уважаемый администратор,</p>
+        <p>Вы получили новый отзыв от пользователя:</p>
+        <ul>
+            <li><strong>ID пользователя:</strong> {{user_id}}</li>
+            <li><strong>Email:</strong> {{email}}</li>
+            <li><strong>Телефон:</strong> {{phone_number}}</li>
+        </ul>
+        <p>Текст отзыва:</p>
+        <blockquote>
+            <p><em>{{message}}</em></p>
+        </blockquote>
+        <p>Тип отзыва: <strong>{{feedbackType}}</strong></p>
+    </div>
+    <div class="footer">
+        <p>Пожалуйста, свяжитесь с пользователем, если необходимо дальнейшее взаимодействие.</p>
+        <p>Это автоматическое уведомление. Пожалуйста, не отвечайте на это письмо.</p>
+    </div>
+</div>
+</body>
+</html>
