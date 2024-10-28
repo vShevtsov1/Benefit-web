@@ -81,7 +81,7 @@ public class OrderService {
         orderFullDTO.setProducts(products_response);
         orderFullDTO.setUser(modelMapper.map(user, UserDTO.class));
 
-        CompletableFuture.runAsync(() ->emailService.sendEmailOrder("s.batanin@redi.partners",String.format("%s %s (%s)", user.getName(), user.getSurname(), user.getEmail()),order.getTime(),user.getShippingAddress(),products_response,order.getSum()))
+        CompletableFuture.runAsync(() ->emailService.sendEmailOrder("a.kovalchuk@redi.partners",String.format("%s %s (%s)", user.getName(), user.getSurname(), user.getEmail()),order.getTime(),user.getShippingAddress(),products_response,order.getSum()))
                 .thenRun(() -> log.info("Email sent asynchronously!"))
                 .exceptionally(ex -> {
                     log.error("Failed to send email", ex);

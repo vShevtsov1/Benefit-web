@@ -221,7 +221,7 @@ public class EmailService {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(gmailUser, "Benefit REDI"));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(gmailUser));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("a.kovalchuk@redi.partners"));
             message.setSubject("Новый отзыв от пользоватся "+email);
 
             String htmlContent = loadHTMLContentFeedback( id,email,phone_number,content);
