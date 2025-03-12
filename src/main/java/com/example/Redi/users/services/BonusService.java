@@ -4,6 +4,7 @@ import com.example.Redi.logs.data.Logs;
 import com.example.Redi.logs.enums.LogType;
 import com.example.Redi.logs.service.LogsService;
 import com.example.Redi.users.data.User;
+import com.example.Redi.users.enums.EmploymentType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class BonusService {
             if (hireMonth == currentMonth && hireDay == currentDay) {
                 int years = currentYear - hireYear;
                 int count = calculateBonus(years);
+                if(user.getEmploymentType().equals(EmploymentType.PART_TIME)){
+                    count += count/2;
+                }
                 user.setBonusCount(user.getBonusCount() + count);
                 userRepository.save(user);
                 String logMessage = "System updated points for user with ID: " + user.getId() + "\n";

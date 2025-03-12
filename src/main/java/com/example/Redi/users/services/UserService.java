@@ -53,6 +53,7 @@ public class UserService {
 
     @Autowired
     private EmailService emailService;
+
     public String generatePassayPassword() {
         PasswordGenerator gen = new PasswordGenerator();
         CharacterData lowerCaseChars = EnglishCharacterData.LowerCase;
@@ -152,6 +153,7 @@ public class UserService {
             user.setPhone(userDTO.getPhone());
             user.setShippingAddress(userDTO.getShippingAddress());
             user.setRole(userDTO.getRole());
+            user.setEmploymentType(userDTO.getEmploymentType());
             userRepo.save(user);
             String logMessage = "Admin updated data for user with ID: " + user.getId() + "\n";
             logMessage += "New Data:\n";
@@ -167,6 +169,7 @@ public class UserService {
             logMessage += "Phone: " + user.getPhone() + "\n";
             logMessage += "Shipping Address: " + user.getShippingAddress() + "\n";
             logMessage += "Role: " + user.getRole() + "\n";
+            logMessage += "EmploymentType: " + user.getEmploymentType() + "\n";
             logsService.createLog(new Logs(LogType.USER,email,LocalDateTime.now(),logMessage));
             return modelMapper.map(user,UserDTO.class);
         }

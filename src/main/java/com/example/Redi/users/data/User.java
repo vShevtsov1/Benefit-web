@@ -1,5 +1,6 @@
 package com.example.Redi.users.data;
 
+import com.example.Redi.users.enums.EmploymentType;
 import com.example.Redi.users.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,5 +35,6 @@ public class User {
     private String photoUrl;
     private Role role;
     private Boolean changePassword;
+    private EmploymentType employmentType;
 
 }

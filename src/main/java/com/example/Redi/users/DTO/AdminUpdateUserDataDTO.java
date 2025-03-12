@@ -1,5 +1,6 @@
 package com.example.Redi.users.DTO;
 
+import com.example.Redi.users.enums.EmploymentType;
 import com.example.Redi.users.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,4 +26,5 @@ public class AdminUpdateUserDataDTO {
     private String phone;
     private String shippingAddress;
     private Role role;
+    private EmploymentType employmentType;
 }
