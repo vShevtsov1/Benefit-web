@@ -33,7 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/webjars/**",
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            "/api-docs/**",
     };
 
     @Override
@@ -67,6 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/user/admin/all").hasAnyRole(String.valueOf(Role.ADMIN))
                 .mvcMatchers("/product/admin/get-all").hasAnyRole(String.valueOf(Role.ADMIN))
                 .mvcMatchers("/product/admin/delete").hasAnyRole(String.valueOf(Role.ADMIN))
+                .mvcMatchers("/points/**").hasAnyRole(String.valueOf(Role.ADMIN))
                 .anyRequest().authenticated();
         // Add JWT token filter
         http.addFilterBefore(JwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

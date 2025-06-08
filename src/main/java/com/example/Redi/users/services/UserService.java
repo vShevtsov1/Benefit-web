@@ -2,8 +2,10 @@ package com.example.Redi.users.services;
 
 import com.example.Redi.email.EmailService;
 import com.example.Redi.logs.data.Logs;
+import com.example.Redi.logs.data.Points;
 import com.example.Redi.logs.enums.LogType;
 import com.example.Redi.logs.service.LogsService;
+import com.example.Redi.logs.service.PointsService;
 import com.example.Redi.s3.S3Service;
 import com.example.Redi.security.TokenServices;
 import com.example.Redi.users.DTO.*;
@@ -53,6 +55,9 @@ public class UserService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private PointsService pointsService;
 
     public String generatePassayPassword() {
         PasswordGenerator gen = new PasswordGenerator();
@@ -181,6 +186,7 @@ public class UserService {
 
     public UserDTO updateUserPoints(UpdatePoints updatePoints,String email){
         User user = userRepo.findById(updatePoints.getUserId()).get();
+        User initiator = userRepo.findByEmail(email);
         if(user!=null){
             if(updatePoints.getType().equals(UpdatePointType.INCREASE)){
                 user.setBonusCount(user.getBonusCount()+updatePoints.getCount());
@@ -192,6 +198,7 @@ public class UserService {
                             log.error("Failed to send email", ex);
                             return null;
                         });
+                pointsService.createPoints(new Points(initiator, user, updatePoints.getCount(), UpdatePointType.INCREASE, updatePoints.getMessage(), LocalDateTime.now()));
             }
             else {
                 user.setBonusCount(user.getBonusCount()-updatePoints.getCount());
@@ -202,6 +209,7 @@ public class UserService {
                             log.error("Failed to send email", ex);
                             return null;
                         });
+                pointsService.createPoints(new Points(initiator, user, updatePoints.getCount(), UpdatePointType.DECREASE, updatePoints.getMessage(), LocalDateTime.now()));
 
             }
 

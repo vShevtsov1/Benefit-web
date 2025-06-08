@@ -1,10 +1,13 @@
 package com.example.Redi.users.services;
 
 import com.example.Redi.logs.data.Logs;
+import com.example.Redi.logs.data.Points;
 import com.example.Redi.logs.enums.LogType;
 import com.example.Redi.logs.service.LogsService;
+import com.example.Redi.logs.service.PointsService;
 import com.example.Redi.users.data.User;
 import com.example.Redi.users.enums.EmploymentType;
+import com.example.Redi.users.enums.UpdatePointType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,9 @@ public class BonusService {
 
     @Autowired
     private LogsService logsService;
+
+    @Autowired
+    private PointsService pointsService;
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void updateBonuses() {
@@ -53,6 +59,8 @@ public class BonusService {
                 logMessage += "Count: " + count + "\n";
 
                 logsService.createLog(new Logs(LogType.POINTS,null, LocalDateTime.now(),logMessage));
+                pointsService.createPoints(new Points(null, user, count, UpdatePointType.INCREASE, "automatic accrual on anniversary", LocalDateTime.now()));
+
             }
         }
     }
