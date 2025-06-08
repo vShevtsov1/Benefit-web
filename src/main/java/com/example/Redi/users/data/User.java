@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(value = "Users")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class User {
 
     private String id;
