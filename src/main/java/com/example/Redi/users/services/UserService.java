@@ -6,6 +6,7 @@ import com.example.Redi.logs.data.Points;
 import com.example.Redi.logs.enums.LogType;
 import com.example.Redi.logs.service.LogsService;
 import com.example.Redi.logs.service.PointsService;
+import com.example.Redi.s3.FileS3Service;
 import com.example.Redi.s3.S3Service;
 import com.example.Redi.security.TokenServices;
 import com.example.Redi.users.DTO.*;
@@ -51,7 +52,7 @@ public class UserService {
     private TokenServices tokenServices;
 
     @Autowired
-    private S3Service service;
+    private FileS3Service service;
 
     @Autowired
     private EmailService emailService;

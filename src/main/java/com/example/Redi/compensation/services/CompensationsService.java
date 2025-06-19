@@ -7,6 +7,7 @@ import com.example.Redi.compensation.enums.CompensationStatus;
 import com.example.Redi.logs.data.Logs;
 import com.example.Redi.logs.enums.LogType;
 import com.example.Redi.logs.service.LogsService;
+import com.example.Redi.s3.FileS3Service;
 import com.example.Redi.s3.S3Service;
 import com.example.Redi.users.data.User;
 import com.example.Redi.users.services.UserRepo;
@@ -31,7 +32,7 @@ public class CompensationsService {
     @Autowired
     private LogsService logsService;
     @Autowired
-    private S3Service service;
+    private FileS3Service service;
     public Compensations createCompensation(CompensationsDTO compensationsDTO,String email) throws IOException {
         User user = userRepo.findByEmail(email);
         if(user==null){

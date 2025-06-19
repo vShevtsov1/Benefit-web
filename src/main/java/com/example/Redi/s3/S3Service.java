@@ -1,6 +1,8 @@
 package com.example.Redi.s3;
 
+import com.example.Redi.s3.DTO.UploadResult;
 import lombok.var;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,8 @@ import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,25 +24,16 @@ import java.nio.file.StandardCopyOption;
 import java.io.IOException;
 import java.util.UUID;
 
-@Service
-public class S3Service {
+
+public abstract class S3Service {
 
     private final S3Client s3Client;
 
-    private String bucketName;
+    private final String bucketName;
 
-    private String keyID;
 
-    private String accessKey;
-
-    @Autowired
-    public S3Service(@Value("${bucket.name}") String bucketName,
-                     @Value("${minio.access.key}") String keyID,
-                     @Value("${minio.secret.key}") String accessKey,
-                     @Value("${minio.endpoint}") String endpoint) {
+    public S3Service(String bucketName, String keyID, String accessKey, String endpoint) {
         this.bucketName = bucketName;
-        this.keyID = keyID;
-        this.accessKey = accessKey;
         AwsBasicCredentials credentials = AwsBasicCredentials.create(keyID, accessKey);
         this.s3Client = S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
@@ -71,4 +66,33 @@ public class S3Service {
             Files.deleteIfExists(tempFile);
         }
     }
+
+    public UploadResult uploadExcel(String folder, Workbook workbook) throws IOException {
+        String uuid = UUID.randomUUID().toString();
+        String filename = uuid + ".xlsx";
+        File tempFile = File.createTempFile(uuid, ".xlsx");
+
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            workbook.write(out);
+        }
+
+        String key = folder + "/" + filename;
+
+        PutObjectRequest putRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .acl(ObjectCannedACL.PRIVATE)
+                .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .build();
+
+        PutObjectResponse response = s3Client.putObject(putRequest, RequestBody.fromFile(tempFile));
+
+        Files.deleteIfExists(tempFile.toPath());
+
+        String url = s3Client.utilities().getUrl(builder -> builder.bucket(bucketName).key(key)).toExternalForm();
+
+        return new UploadResult(key, url);
+    }
+
+
 }

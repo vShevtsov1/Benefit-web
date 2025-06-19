@@ -4,6 +4,7 @@ import com.example.Redi.products.DTO.CreateProductDTO;
 import com.example.Redi.products.DTO.UpdateProductDTO;
 import com.example.Redi.products.data.Product;
 import com.example.Redi.products.data.Review;
+import com.example.Redi.s3.FileS3Service;
 import com.example.Redi.s3.S3Service;
 import com.example.Redi.users.data.User;
 import com.example.Redi.users.services.UserRepo;
@@ -28,7 +29,7 @@ public class ProductsService {
     private UserRepo userRepo;
 
     @Autowired
-    private S3Service s3Service;
+    private FileS3Service s3Service;
     public Product createNewProduct(CreateProductDTO createProductDTO) throws IOException {
         Product product = modelMapper.map(createProductDTO, Product.class);
         product.setPhotoUrl(s3Service.uploadPhoto("products",createProductDTO.getPhotoUrl()));

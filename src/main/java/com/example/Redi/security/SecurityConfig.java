@@ -68,7 +68,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/user/admin/all").hasAnyRole(String.valueOf(Role.ADMIN))
                 .mvcMatchers("/product/admin/get-all").hasAnyRole(String.valueOf(Role.ADMIN))
                 .mvcMatchers("/product/admin/delete").hasAnyRole(String.valueOf(Role.ADMIN))
-                .mvcMatchers("/points/**").hasAnyRole(String.valueOf(Role.ADMIN))
+//                .mvcMatchers("/points/**").hasAnyRole(String.valueOf(Role.ADMIN))
+                .mvcMatchers("/points/export").permitAll()
                 .anyRequest().authenticated();
         // Add JWT token filter
         http.addFilterBefore(JwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
