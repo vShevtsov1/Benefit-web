@@ -168,42 +168,46 @@ public class PointsService {
 
         List<Points> records = mongoTemplate.aggregate(aggregation, "points", Points.class).getMappedResults();
 
-        return reportS3Service.uploadExcel("exports", generateReport(records));
+        Workbook workbook = generateReport(records);
+        try {
+            return reportS3Service.uploadExcel("exports", workbook);
+        } finally {
+            workbook.close();
+        }
     }
 
     public Workbook generateReport(List<Points> records) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Бали");
 
-        try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Бали");
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Ініціатор");
+        headerRow.createCell(1).setCellValue("Отримувач");
+        headerRow.createCell(2).setCellValue("Департамент");
+        headerRow.createCell(3).setCellValue("Бали");
+        headerRow.createCell(4).setCellValue("Тип");
+        headerRow.createCell(5).setCellValue("Повідомлення");
+        headerRow.createCell(6).setCellValue("Дата");
 
-            Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("Ініціатор");
-            headerRow.createCell(1).setCellValue("Отримувач");
-            headerRow.createCell(2).setCellValue("Департамент");
-            headerRow.createCell(3).setCellValue("Бали");
-            headerRow.createCell(4).setCellValue("Тип");
-            headerRow.createCell(5).setCellValue("Повідомлення");
-            headerRow.createCell(6).setCellValue("Дата");
-
-            int rowNum = 1;
-            for (Points record : records) {
-                Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(record.getInitiator() != null ? record.getInitiator().getName() + " " + record.getInitiator().getSurname() + " (" + record.getInitiator().getEmail() + ")" : "Система");
-                row.createCell(1).setCellValue(record.getReceiver() != null ? record.getReceiver().getName() + " " + record.getReceiver().getSurname() + " (" + record.getReceiver().getEmail() + ")" : "Не відомий користувач");
-                row.createCell(2).setCellValue(record.getReceiver().getDepartment());
-                row.createCell(3).setCellValue(record.getPoints());
-                row.createCell(4).setCellValue(record.getUpdatePointType().name());
-                row.createCell(5).setCellValue(record.getMessage());
-                row.createCell(6).setCellValue(record.getTimestamp().toString());
-            }
-
-            for (int i = 0; i <= 4; i++) {
-                sheet.autoSizeColumn(i);
-            }
-
-            return workbook;
+        int rowNum = 1;
+        for (Points record : records) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(record.getInitiator() != null ? record.getInitiator().getName() + " " + record.getInitiator().getSurname() + " (" + record.getInitiator().getEmail() + ")" : "Система");
+            row.createCell(1).setCellValue(record.getReceiver() != null ? record.getReceiver().getName() + " " + record.getReceiver().getSurname() + " (" + record.getReceiver().getEmail() + ")" : "Не відомий користувач");
+            row.createCell(2).setCellValue(record.getReceiver().getDepartment());
+            row.createCell(3).setCellValue(record.getPoints());
+            row.createCell(4).setCellValue(record.getUpdatePointType().name());
+            row.createCell(5).setCellValue(record.getMessage());
+            row.createCell(6).setCellValue(record.getTimestamp().toString());
         }
+
+        for (int i = 0; i <= 6; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        return workbook;
     }
+
 
 
 }
