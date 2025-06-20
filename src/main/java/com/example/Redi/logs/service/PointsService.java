@@ -202,9 +202,7 @@ public class PointsService {
             row.createCell(6).setCellValue(record.getTimestamp().toString());
         }
 
-        for (int i = 0; i <= 6; i++) {
-            sheet.autoSizeColumn(i);
-        }
+
 
         return workbook;
     }
