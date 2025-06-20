@@ -9,6 +9,7 @@ import com.example.Redi.users.data.User;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,7 +178,7 @@ public class PointsService {
     }
 
     public Workbook generateReport(List<Points> records) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
+        SXSSFWorkbook workbook = new SXSSFWorkbook ();
         Sheet sheet = workbook.createSheet("Бали");
 
         Row headerRow = sheet.createRow(0);
