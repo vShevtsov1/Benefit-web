@@ -168,6 +168,11 @@ public class PointsService {
 
         List<Points> records = mongoTemplate.aggregate(aggregation, "points", Points.class).getMappedResults();
 
+        return reportS3Service.uploadExcel("exports", generateReport(records));
+    }
+
+    public Workbook generateReport(List<Points> records) throws IOException {
+
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Бали");
 
@@ -183,54 +188,22 @@ public class PointsService {
             int rowNum = 1;
             for (Points record : records) {
                 Row row = sheet.createRow(rowNum++);
-
-                String receiver;
-                if (record.getReceiver() != null && record.getReceiver().getName() != null && record.getReceiver().getSurname() != null) {
-                    if (record.getReceiver().getName().equals(record.getReceiver().getSurname())) {
-                        receiver = record.getReceiver().getName();
-                    } else {
-                        receiver = record.getReceiver().getName() + " " + record.getReceiver().getSurname();
-                    }
-                } else {
-                    receiver = "Undefined";
-                }
-
-                String initiator;
-                if (record.getInitiator() != null && record.getInitiator().getName() != null && record.getInitiator().getSurname() != null) {
-                    if (record.getInitiator().getName().equals(record.getInitiator().getSurname())) {
-                        initiator = record.getInitiator().getName();
-                    } else {
-                        initiator = record.getInitiator().getName() + " " + record.getInitiator().getSurname();
-                    }
-                } else {
-                    initiator = "SYSTEM";
-                }
-
-
-                String department = record.getReceiver().getDepartment();
-
-                row.createCell(0).setCellValue(initiator);
-                row.createCell(1).setCellValue(receiver);
-                row.createCell(2).setCellValue(department);
-
+                row.createCell(0).setCellValue(record.getInitiator() != null ? record.getInitiator().getName() + " " + record.getInitiator().getSurname() + " (" + record.getInitiator().getEmail() + ")" : "Система");
+                row.createCell(1).setCellValue(record.getReceiver() != null ? record.getReceiver().getName() + " " + record.getReceiver().getSurname() + " (" + record.getReceiver().getEmail() + ")" : "Не відомий користувач");
+                row.createCell(2).setCellValue(record.getReceiver().getDepartment());
                 row.createCell(3).setCellValue(record.getPoints());
                 row.createCell(4).setCellValue(record.getUpdatePointType().name());
                 row.createCell(5).setCellValue(record.getMessage());
                 row.createCell(6).setCellValue(record.getTimestamp().toString());
-
-
-
-
             }
 
             for (int i = 0; i <= 4; i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            return reportS3Service.uploadExcel("exports", workbook);
+            return workbook;
         }
     }
-
 
 
 }

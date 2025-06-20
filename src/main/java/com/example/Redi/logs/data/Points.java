@@ -43,4 +43,6 @@ public class Points {
         this.message = message;
         this.timestamp = timestamp;
     }
+
+
 }
