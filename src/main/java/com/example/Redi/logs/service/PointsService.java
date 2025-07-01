@@ -178,7 +178,7 @@ public class PointsService {
     }
 
     public Workbook generateReport(List<Points> records) throws IOException {
-        SXSSFWorkbook workbook = new SXSSFWorkbook ();
+        XSSFWorkbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Бали");
 
         Row headerRow = sheet.createRow(0);
