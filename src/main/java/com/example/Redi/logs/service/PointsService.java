@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PointsService {
@@ -40,7 +41,7 @@ public class PointsService {
     @Autowired
     private ReportS3Service reportS3Service;
 
-    public PointsDTO getAll(LocalDateTime from, LocalDateTime to, String userId, int page, int size) {
+    public PointsDTO getAll(LocalDateTime from, LocalDateTime to, String userId,String receiverDepartment, int page, int size) {
         List<Criteria> criteriaList = new ArrayList<>();
 
         if (from != null && to != null) {
@@ -102,6 +103,14 @@ public class PointsService {
 
         List<Points> content = mongoTemplate.aggregate(aggregation, "points", Points.class).getMappedResults();
 
+
+        if (receiverDepartment != null) {
+            content = content.stream()
+                    .filter(p -> p.getReceiver() != null
+                            && receiverDepartment.equals(p.getReceiver().getDepartment()))
+                    .collect(Collectors.toList());
+        }
+
         return new PointsDTO(content, totalElements, totalPages, page, size);
     }
 
@@ -114,7 +123,7 @@ public class PointsService {
     }
 
 
-    public UploadResult exportPointsToExcel(LocalDateTime from, LocalDateTime to, String userId) throws IOException {
+    public UploadResult exportPointsToExcel(LocalDateTime from, LocalDateTime to, String userId,String receiverDepartment) throws IOException {
         List<Criteria> criteriaList = new ArrayList<>();
 
         if (from != null && to != null) {
@@ -169,6 +178,14 @@ public class PointsService {
 
         List<Points> records = mongoTemplate.aggregate(aggregation, "points", Points.class).getMappedResults();
 
+        if (receiverDepartment != null) {
+            records = records.stream()
+                    .filter(p -> p.getReceiver() != null
+                            && receiverDepartment.equals(p.getReceiver().getDepartment()))
+                    .collect(Collectors.toList());
+        }
+
+
         Workbook workbook = generateReport(records);
         try {
             return reportS3Service.uploadExcel("exports", workbook);
@@ -193,6 +210,7 @@ public class PointsService {
         int rowNum = 1;
         for (Points record : records) {
             Row row = sheet.createRow(rowNum++);
+            
             row.createCell(0).setCellValue(record.getInitiator() != null ? record.getInitiator().getName() + " " + record.getInitiator().getSurname() + " (" + record.getInitiator().getEmail() + ")" : "Система");
             row.createCell(1).setCellValue(record.getReceiver() != null ? record.getReceiver().getName() + " " + record.getReceiver().getSurname() + " (" + record.getReceiver().getEmail() + ")" : "Не відомий користувач");
             row.createCell(2).setCellValue(record.getReceiver().getDepartment());

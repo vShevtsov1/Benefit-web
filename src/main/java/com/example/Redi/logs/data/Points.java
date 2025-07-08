@@ -21,10 +21,10 @@ public class Points {
 
     private String id;
 
-    @DBRef
+    @DBRef(lazy = true)
     private User initiator;
 
-    @DBRef
+    @DBRef(lazy = true)
     private User receiver;
 
     private int points;

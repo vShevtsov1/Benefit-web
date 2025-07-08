@@ -51,11 +51,11 @@ public class PointsController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
 
             @RequestParam(required = false) String userId,
-
+            @RequestParam(required = false) String receiverDepartment,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        PointsDTO response = pointsService.getAll(from, to, userId, page, size);
+        PointsDTO response = pointsService.getAll(from, to, userId,receiverDepartment, page, size);
         return ResponseEntity.ok(response);
     }
 
@@ -63,9 +63,10 @@ public class PointsController {
     public UploadResult exportPointsToExcel(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-            @RequestParam(required = false) String userId
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String receiverDepartment
     ) throws IOException {
-        return pointsService.exportPointsToExcel(from, to, userId);
+        return pointsService.exportPointsToExcel(from, to, userId,receiverDepartment);
     }
 
 
