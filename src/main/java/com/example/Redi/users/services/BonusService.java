@@ -66,19 +66,20 @@ public class BonusService {
     }
 
     private int calculateBonus(int years) {
-        if (years <= 0) return 0;
-        switch (years) {
-            case 1: return 10000;
-            case 2: return 20000;
-            case 3: return 30000;
-            case 4: return 40000;
-            case 5: return 60000;
-            case 6: return 150000;
-            case 7: return 280000;
-            case 8: return 300000;
-            case 9: return 350000;
-            case 10: return 400000;
-            default: return 400000; // For 10+ years
-        }
+    if (years <= 0) return 0;
+    switch (years) {
+        case 1: return 10000;
+        case 2: return 20000;
+        case 3: return 30000;
+        case 4: return 40000;
+        case 5: return 60000;
+        case 6: return 100000;
+        case 7: return 140000;
+        case 8: return 180000;
+        case 9: return 220000;
+        case 10: return 260000;
+        default: return 260000;
     }
+}
+
 }
