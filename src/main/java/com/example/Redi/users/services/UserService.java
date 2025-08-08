@@ -13,6 +13,7 @@ import com.example.Redi.users.DTO.*;
 import com.example.Redi.users.data.User;
 import com.example.Redi.users.enums.CreateUser;
 import com.example.Redi.users.enums.LoginUser;
+import com.example.Redi.users.enums.ResetPassword;
 import com.example.Redi.users.enums.UpdatePointType;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,7 +29,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.passay.DictionarySubstringRule.ERROR_CODE;
@@ -59,6 +62,9 @@ public class UserService {
 
     @Autowired
     private PointsService pointsService;
+
+    @Autowired
+    private RedisService redisService;
 
     public String generatePassayPassword() {
         PasswordGenerator gen = new PasswordGenerator();
@@ -247,6 +253,90 @@ public class UserService {
                 .map(user -> modelMapper.map(user, UserDTO.class))
                 .collect(Collectors.toList());
     }
+
+
+    public RequestPasswordResponse requestResetPassword(String email) {
+        User user = userRepo.findByEmail(email);
+        if (user == null) {
+            return new RequestPasswordResponse(
+                    "User with this email not found",
+                    false,
+                    ResetPassword.USER_NOT_FOUND
+            );
+        }
+
+        String token = UUID.randomUUID().toString();
+        redisService.saveToRedis(token, new RequestResetPasswordDTO(token, user.getId()), 12, TimeUnit.HOURS);
+
+        String resetLink = "https://benefit.redi.partners/request-reset?token=" + token;
+
+        CompletableFuture.runAsync(() ->
+                emailService.sendEmailResetPassword(user.getEmail(), resetLink)
+        ).thenRun(() ->
+                log.info("Password reset email sent asynchronously!")
+        ).exceptionally(ex -> {
+            log.error("Failed to send password reset email", ex);
+            return null;
+        });
+
+        return new RequestPasswordResponse(
+                "Password reset link has been sent to your email",
+                true,
+                ResetPassword.SUCCESS
+        );
+    }
+
+    public RequestPasswordResponse checkResetToken(String token) {
+        boolean exists = redisService.exists(token);
+
+        if (exists) {
+            return new RequestPasswordResponse(
+                    "Token is valid",
+                    true,
+                    ResetPassword.SUCCESS
+            );
+        } else {
+            return new RequestPasswordResponse(
+                    "Token is invalid or expired",
+                    false,
+                    ResetPassword.TOKEN_EXPIRED
+            );
+        }
+    }
+
+    public RequestPasswordResponse changePassword(ChangePasswordRequest request) {
+        RequestResetPasswordDTO data = redisService.getFromRedis(request.getToken(), RequestResetPasswordDTO.class);
+
+        if (data == null) {
+            return new RequestPasswordResponse(
+                    "Token is invalid or expired",
+                    false,
+                    ResetPassword.TOKEN_EXPIRED
+            );
+        }
+
+        User user = userRepo.findById(data.getUserId()).orElse(null);
+
+        if (user == null) {
+            return new RequestPasswordResponse(
+                    "User not found",
+                    false,
+                    ResetPassword.USER_NOT_FOUND
+            );
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepo.save(user);
+
+        redisService.deleteFromRedis(request.getToken());
+
+        return new RequestPasswordResponse(
+                "Password has been changed successfully",
+                true,
+                ResetPassword.SUCCESS
+        );
+    }
+
 
 
 

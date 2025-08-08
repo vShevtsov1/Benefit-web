@@ -108,4 +108,36 @@ public class userController {
         }
     }
 
+    @PostMapping("/request-reset-password")
+    public ResponseEntity<RequestPasswordResponse> requestResetPassword(@RequestParam String email) {
+        RequestPasswordResponse response = userService.requestResetPassword(email);
+        if (response.isStatus()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @GetMapping("/check-reset-token")
+    public ResponseEntity<RequestPasswordResponse> checkResetToken(@RequestParam String token) {
+        RequestPasswordResponse response = userService.checkResetToken(token);
+
+        if (response.isStatus()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<RequestPasswordResponse> changePassword(@RequestBody ChangePasswordRequest request) {
+        RequestPasswordResponse response = userService.changePassword(request);
+
+        if (response.isStatus()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
 }

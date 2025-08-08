@@ -39,4 +39,5 @@ public class User {
     private Boolean changePassword;
     private EmploymentType employmentType;
 
+
 }
