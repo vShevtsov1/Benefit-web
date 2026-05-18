@@ -11,7 +11,7 @@ COPY . .
 RUN mvn package -Dmaven.test.skip
 
 # Stage 2: Package
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:8-jdk-alpine
 
 # Copy the built JAR file from the "build" container to a new container
 COPY --from=build /app/target/Redi-0.0.1-SNAPSHOT.jar /app/Redi.jar
