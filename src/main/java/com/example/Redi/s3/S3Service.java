@@ -1,7 +1,6 @@
 package com.example.Redi.s3;
 
 import com.example.Redi.s3.DTO.UploadResult;
-import lombok.var;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -3,27 +3,31 @@ package com.example.Redi.security;
 import com.example.Redi.users.enums.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
+@Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
+@EnableMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
         prePostEnabled = true
 )
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     @Autowired
-    private JwtTokenFilter JwtTokenFilter;
+    private JwtTokenFilter jwtTokenFilter;
+
     private static final String[] AUTH_WHITELIST = {
-            // -- Swagger UI v2
             "/v2/api-docs",
             "/swagger-resources",
             "/swagger-resources/**",
@@ -31,53 +35,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/configuration/security",
             "/swagger-ui.html",
             "/webjars/**",
-            // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/api-docs/**",
     };
 
-    @Override
-    public void  configure(HttpSecurity http) throws Exception {
-
-
-
-        http = http.cors().and().csrf().disable();
-
-        // Set session management to stateless
-        http = http
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and();
-
-        // Set unauthorized requests exception handler
-        http = http
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        (request, response, ex) -> {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
-                        }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(
+                        (request, response, e) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage())
+                ))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(AUTH_WHITELIST).permitAll()
+                        .requestMatchers("/user/create").hasAnyRole(String.valueOf(Role.ADMIN))
+                        .requestMatchers("/user/login").permitAll()
+                        .requestMatchers("/user/admin/all").hasAnyRole(String.valueOf(Role.ADMIN))
+                        .requestMatchers("/product/admin/get-all").hasAnyRole(String.valueOf(Role.ADMIN))
+                        .requestMatchers("/product/admin/delete").hasAnyRole(String.valueOf(Role.ADMIN))
+                        .requestMatchers("/points/**").hasAnyRole(String.valueOf(Role.ADMIN))
+                        .requestMatchers("/user/request-reset-password").permitAll()
+                        .requestMatchers("/user/check-reset-token").permitAll()
+                        .requestMatchers("/user/change-password").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .and();
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.authorizeRequests()
-                // Swagger endpoints must be publicly accessible
-                .mvcMatchers(AUTH_WHITELIST).permitAll()
-                .mvcMatchers("/user/create").hasAnyRole(String.valueOf(Role.ADMIN))
-                .mvcMatchers("/user/login").permitAll()
-                .mvcMatchers("/user/admin/all").hasAnyRole(String.valueOf(Role.ADMIN))
-                .mvcMatchers("/product/admin/get-all").hasAnyRole(String.valueOf(Role.ADMIN))
-                .mvcMatchers("/product/admin/delete").hasAnyRole(String.valueOf(Role.ADMIN))
-                .mvcMatchers("/points/**").hasAnyRole(String.valueOf(Role.ADMIN))
-                .mvcMatchers("/user/request-reset-password").permitAll()
-                .mvcMatchers("/user/check-reset-token").permitAll()
-                .mvcMatchers("/user/change-password").permitAll()
-//                .mvcMatchers("/points/export").permitAll()
-                .anyRequest().authenticated();
-        // Add JWT token filter
-        http.addFilterBefore(JwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-
+        return http.build();
     }
 }
