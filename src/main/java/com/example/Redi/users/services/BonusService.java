@@ -29,7 +29,7 @@ public class BonusService {
     @Autowired
     private PointsService pointsService;
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 10 * * ?", zone = "Europe/Kyiv")
     public void updateBonuses() {
         List<User> users = userRepository.findAll();
         Date today = new Date();
@@ -66,20 +66,19 @@ public class BonusService {
     }
 
     private int calculateBonus(int years) {
-    if (years <= 0) return 0;
-    switch (years) {
-        case 1: return 10000;
-        case 2: return 20000;
-        case 3: return 30000;
-        case 4: return 40000;
-        case 5: return 60000;
-        case 6: return 100000;
-        case 7: return 140000;
-        case 8: return 180000;
-        case 9: return 220000;
-        case 10: return 260000;
-        default: return 260000;
+        if (years <= 0) return 0;
+        return switch (years) {
+            case 1 -> 4000;
+            case 2 -> 8000;
+            case 3 -> 10400;
+            case 4 -> 13600;
+            case 5 -> 20000;
+            case 6 -> 21600;
+            case 7 -> 24000;
+            case 8 -> 26400;
+            case 9 -> 29600;
+            default -> 32000;
+        };
     }
-}
 
 }

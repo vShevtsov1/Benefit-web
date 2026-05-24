@@ -5,12 +5,12 @@ import com.example.Redi.users.data.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
@@ -18,22 +18,25 @@ public class TokenServices {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    public String generateTokenUser(User user,Date date) {
-        String jws = Jwts.builder().
-                setSubject(user.getEmail()).
-                claim("role", user.getRole()).
-                setExpiration(date).
-                signWith(SignatureAlgorithm.HS256, jwtSecret).compact();
-        return jws;
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-
-
-
+    public String generateTokenUser(User user, Date date) {
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .claim("role", user.getRole())
+                .expiration(date)
+                .signWith(getSigningKey())
+                .compact();
+    }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
             return true;
         } catch (JwtException e) {
             return false;
@@ -42,17 +45,19 @@ public class TokenServices {
 
     public String getRole(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
         return (String) claims.get("role");
     }
 
     public String getMail(String token) {
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
         return claims.getSubject();
     }
 }
